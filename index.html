@@ -84,11 +84,69 @@
         .settings-body{flex:1;overflow-y:auto;padding:18px;display:flex;flex-direction:column;gap:20px;}
         .section{background:var(--bg-card);border-radius:var(--radius-md);padding:16px;border:1px solid var(--border-color);}
         .section-title{font-weight:600;margin-bottom:10px;font-size:var(--font-md);color:var(--text-secondary);}
-        .word-card-item{display:flex;align-items:center;gap:8px;padding:8px 10px;background:var(--bg-tertiary);border-radius:var(--radius-sm);margin-bottom:6px;flex-wrap:wrap;}
-        .word-card-item.blocked-item{opacity:0.6;background:#2a1a1a;}
-        .word-card-item.blocked-item .word-card-content{text-decoration:line-through;color:var(--text-muted);}
-        .word-card-content{flex:1;font-size:var(--font-md);color:var(--text-primary);word-break:break-word;cursor:pointer;}
-        .word-card-tag{font-size:var(--font-xs);padding:2px 6px;border-radius:10px;background:#252538;color:var(--text-tertiary);}
+
+        /* 字卡网格布局 */
+        .word-card-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+            gap: 8px;
+            max-height: 320px;
+            overflow-y: auto;
+        }
+        .word-card-item {
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
+            padding: 10px;
+            background: var(--bg-tertiary);
+            border-radius: var(--radius-sm);
+            border: 1px solid transparent;
+            transition: border-color var(--transition-fast);
+            position: relative;
+        }
+        .word-card-item:hover { border-color: var(--border-light); }
+        .word-card-item.blocked-item { opacity: 0.6; background: #2a1a1a; }
+        .word-card-item.blocked-item .word-card-content { text-decoration: line-through; color: var(--text-muted); }
+        .word-card-header {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+        .word-card-header input[type="checkbox"] {
+            flex-shrink: 0;
+        }
+        .word-card-content {
+            flex: 1;
+            font-size: var(--font-md);
+            color: var(--text-primary);
+            word-break: break-word;
+            cursor: pointer;
+            line-height: 1.4;
+        }
+        .word-card-tags {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 4px;
+            margin-top: 2px;
+        }
+        .word-card-tag {
+            font-size: var(--font-xs);
+            padding: 2px 6px;
+            border-radius: 10px;
+            background: #252538;
+            color: var(--text-tertiary);
+        }
+        .word-card-actions {
+            display: flex;
+            gap: 6px;
+            justify-content: flex-end;
+            margin-top: 4px;
+        }
+        .word-card-actions .btn {
+            padding: 4px 8px;
+            font-size: var(--font-xs);
+        }
+
         .group-folder{display:inline-flex;align-items:center;gap:6px;padding:8px 12px;background:var(--bg-tertiary);border-radius:var(--radius-sm);margin:4px;cursor:pointer;font-size:var(--font-sm);color:var(--text-secondary);transition:all var(--transition-fast);}
         .group-folder.selected{background:var(--bg-accent);color:var(--text-accent-light);}
         .group-folder .folder-actions{display:flex;gap:8px;margin-left:4px;}
@@ -169,7 +227,7 @@
                 <div class="batch-check-header">
                     <label><input type="checkbox" id="selectAllCheckbox"> 全选/取消</label>
                 </div>
-                <div id="wordCardList" style="max-height:300px;overflow-y:auto;"></div>
+                <div class="word-card-grid" id="wordCardList"></div>
                 <div style="display:flex;justify-content:space-between;margin-top:8px;">
                     <button class="btn" id="btnImportCards">导入字卡</button>
                     <button class="btn" id="btnExportCards">导出字卡</button>
@@ -402,12 +460,30 @@
         selectAllCheckbox.checked = false;
         wordCardList.innerHTML=filtered.length?'':'<div style="color:var(--text-muted);text-align:center;padding:24px;">暂无字卡</div>';
         filtered.forEach(c=>{
-            const div=document.createElement('div'); div.className='word-card-item'+(c.blocked?' blocked-item':'');
-            div.innerHTML=`<input type="checkbox" class="card-check" data-id="${c.id}"><span class="word-card-content">${c.content}</span><span class="word-card-tag">${c.type==='text'?'📝文字':c.type==='emoji'?'😊Emoji':'📌状态'}</span>${c.group?`<span class="word-card-tag">${c.group}</span>`:''}<button class="btn" data-act="block" style="padding:4px 8px;">${c.blocked?'🔇':'🔊'}</button><button class="btn danger" data-act="del" style="padding:4px 8px;">🗑</button>`;
-            div.querySelector('.word-card-content').onclick=()=>{ const nc=prompt('编辑字卡',c.content); if(nc!==null && nc.trim()===''){ showToast('内容不能为空'); return; } if(nc!==null && nc.trim()){ c.content=nc.trim(); saveData(); refreshCards(); } };
-            div.querySelector('[data-act=block]').onclick=()=>{ c.blocked=!c.blocked; saveData(); refreshCards(); };
-            div.querySelector('[data-act=del]').onclick=()=>{ if(confirm('删除？')){ wordCards=wordCards.filter(x=>x.id!==c.id); saveData(); refreshCards(); } };
-            wordCardList.appendChild(div);
+            const card = document.createElement('div');
+            card.className = 'word-card-item' + (c.blocked ? ' blocked-item' : '');
+            card.innerHTML = `
+                <div class="word-card-header">
+                    <input type="checkbox" class="card-check" data-id="${c.id}">
+                    <span class="word-card-content">${c.content}</span>
+                </div>
+                <div class="word-card-tags">
+                    <span class="word-card-tag">${c.type==='text'?'📝文字':c.type==='emoji'?'😊Emoji':'📌状态'}</span>
+                    ${c.group ? `<span class="word-card-tag">${c.group}</span>` : ''}
+                </div>
+                <div class="word-card-actions">
+                    <button class="btn" data-act="block">${c.blocked?'🔇':'🔊'}</button>
+                    <button class="btn danger" data-act="del">🗑</button>
+                </div>
+            `;
+            card.querySelector('.word-card-content').addEventListener('click', ()=>{
+                const nc = prompt('编辑字卡', c.content);
+                if(nc !== null && nc.trim() === '') { showToast('内容不能为空'); return; }
+                if(nc !== null && nc.trim()) { c.content = nc.trim(); saveData(); refreshCards(); }
+            });
+            card.querySelector('[data-act=block]').addEventListener('click', ()=>{ c.blocked = !c.blocked; saveData(); refreshCards(); });
+            card.querySelector('[data-act=del]').addEventListener('click', ()=>{ if(confirm('删除？')){ wordCards = wordCards.filter(x=>x.id!==c.id); saveData(); refreshCards(); } });
+            wordCardList.appendChild(card);
         });
         refreshGroupFolders();
     }
@@ -478,7 +554,6 @@
 
     loadData(); buildEmojiPanel(); updateAllUI(); renderMessages(); refreshCards(); updateStorageInfo(); startTimers(); updateSendBtn();
     window.addEventListener('beforeunload',saveData); setInterval(saveData,300000);
-    // 键盘弹出时自动滚到底部
     window.addEventListener('resize', () => { if(chatArea.scrollHeight > chatArea.clientHeight) chatArea.scrollTop = chatArea.scrollHeight; });
 })();
 </script>

@@ -85,67 +85,18 @@
         .section{background:var(--bg-card);border-radius:var(--radius-md);padding:16px;border:1px solid var(--border-color);}
         .section-title{font-weight:600;margin-bottom:10px;font-size:var(--font-md);color:var(--text-secondary);}
 
-        /* 字卡网格布局 */
-        .word-card-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
-            gap: 8px;
-            max-height: 320px;
-            overflow-y: auto;
-        }
-        .word-card-item {
-            display: flex;
-            flex-direction: column;
-            gap: 6px;
-            padding: 10px;
-            background: var(--bg-tertiary);
-            border-radius: var(--radius-sm);
-            border: 1px solid transparent;
-            transition: border-color var(--transition-fast);
-            position: relative;
-        }
-        .word-card-item:hover { border-color: var(--border-light); }
-        .word-card-item.blocked-item { opacity: 0.6; background: #2a1a1a; }
-        .word-card-item.blocked-item .word-card-content { text-decoration: line-through; color: var(--text-muted); }
-        .word-card-header {
-            display: flex;
-            align-items: center;
-            gap: 6px;
-        }
-        .word-card-header input[type="checkbox"] {
-            flex-shrink: 0;
-        }
-        .word-card-content {
-            flex: 1;
-            font-size: var(--font-md);
-            color: var(--text-primary);
-            word-break: break-word;
-            cursor: pointer;
-            line-height: 1.4;
-        }
-        .word-card-tags {
-            display: flex;
-            flex-wrap: wrap;
-            gap: 4px;
-            margin-top: 2px;
-        }
-        .word-card-tag {
-            font-size: var(--font-xs);
-            padding: 2px 6px;
-            border-radius: 10px;
-            background: #252538;
-            color: var(--text-tertiary);
-        }
-        .word-card-actions {
-            display: flex;
-            gap: 6px;
-            justify-content: flex-end;
-            margin-top: 4px;
-        }
-        .word-card-actions .btn {
-            padding: 4px 8px;
-            font-size: var(--font-xs);
-        }
+        .word-card-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:8px;max-height:320px;overflow-y:auto;}
+        .word-card-item{display:flex;flex-direction:column;gap:6px;padding:10px;background:var(--bg-tertiary);border-radius:var(--radius-sm);border:1px solid transparent;transition:border-color var(--transition-fast);}
+        .word-card-item:hover{border-color:var(--border-light);}
+        .word-card-item.blocked-item{opacity:0.6;background:#2a1a1a;}
+        .word-card-item.blocked-item .word-card-content{text-decoration:line-through;color:var(--text-muted);}
+        .word-card-header{display:flex;align-items:center;gap:6px;}
+        .word-card-header input[type="checkbox"]{flex-shrink:0;}
+        .word-card-content{flex:1;font-size:var(--font-md);color:var(--text-primary);word-break:break-word;cursor:pointer;line-height:1.4;}
+        .word-card-tags{display:flex;flex-wrap:wrap;gap:4px;margin-top:2px;}
+        .word-card-tag{font-size:var(--font-xs);padding:2px 6px;border-radius:10px;background:#252538;color:var(--text-tertiary);}
+        .word-card-actions{display:flex;gap:6px;justify-content:flex-end;margin-top:4px;}
+        .word-card-actions .btn{padding:4px 8px;font-size:var(--font-xs);}
 
         .group-folder{display:inline-flex;align-items:center;gap:6px;padding:8px 12px;background:var(--bg-tertiary);border-radius:var(--radius-sm);margin:4px;cursor:pointer;font-size:var(--font-sm);color:var(--text-secondary);transition:all var(--transition-fast);}
         .group-folder.selected{background:var(--bg-accent);color:var(--text-accent-light);}
@@ -164,9 +115,10 @@
         input,select,textarea{background:var(--bg-input);border:1px solid var(--border-color);color:var(--text-primary);border-radius:var(--radius-sm);padding:8px 10px;font-size:var(--font-md);outline:none;font-family:inherit;}
         .emoji-panel{position:absolute;bottom:100%;left:12px;right:12px;background:var(--bg-emoji-panel);border:1px solid var(--border-color);border-radius:var(--radius-md);padding:12px;display:grid;grid-template-columns:repeat(5,1fr);gap:10px;max-height:280px;overflow-y:auto;z-index:20;margin-bottom:4px;}
         .emoji-item{font-size:28px;padding:10px 4px;cursor:pointer;border-radius:var(--radius-sm);transition:all var(--transition-fast);background:transparent;border:none;color:inherit;display:flex;align-items:center;justify-content:center;}
-        .search-box{display:flex;gap:8px;margin-bottom:10px;}
+        .search-box{display:flex;gap:8px;margin-bottom:8px;}
         .search-box input{flex:1;}
         .search-box button{white-space:nowrap;}
+        .clear-search-row{margin-bottom:10px;}
         .card-count-info{font-size:var(--font-xs);color:var(--text-tertiary);margin-bottom:8px;}
         .batch-check-header{margin-bottom:6px;display:flex;align-items:center;gap:8px;}
         .batch-check-header label{font-size:var(--font-xs);color:var(--text-tertiary);cursor:pointer;}
@@ -222,7 +174,9 @@
                 <div class="search-box">
                     <input type="text" id="cardSearchInput" placeholder="搜索字卡内容...">
                     <button class="btn" id="btnSearchCard">搜索</button>
-                    <button class="btn" id="btnClearSearch" style="display:none;">✕</button>
+                </div>
+                <div class="clear-search-row">
+                    <button class="btn" id="btnClearSearch" style="display:none;">清除搜索</button>
                 </div>
                 <div class="batch-check-header">
                     <label><input type="checkbox" id="selectAllCheckbox"> 全选/取消</label>
@@ -324,19 +278,11 @@
     let contextTargetMsgId = null;
 
     chatArea.addEventListener('contextmenu', e => { const b=e.target.closest('.msg-bubble'); if(b){ e.preventDefault(); showContextMenu(b, e.clientX, e.clientY); } });
-    chatArea.addEventListener('touchstart', e => {
-        const b=e.target.closest('.msg-bubble'); if(!b) return;
-        longPressTimer = setTimeout(() => { const touch = e.touches[0]; showContextMenu(b, touch.clientX, touch.clientY); }, 500);
-    });
+    chatArea.addEventListener('touchstart', e => { const b=e.target.closest('.msg-bubble'); if(!b) return; longPressTimer = setTimeout(() => { const touch = e.touches[0]; showContextMenu(b, touch.clientX, touch.clientY); }, 500); });
     chatArea.addEventListener('touchend', ()=> clearTimeout(longPressTimer));
     chatArea.addEventListener('touchmove', ()=> clearTimeout(longPressTimer));
     document.addEventListener('click', e => { if(!contextMenu.contains(e.target)) hideContextMenu(); });
-
-    ctxQuote.onclick = () => {
-        const msg = messages.find(m=>m.id==contextTargetMsgId);
-        if(msg){ quotedMessage={id:msg.id, content:msg.content, sender:msg.sender}; quoteText.textContent=(msg.sender==='other'?settings.nickname:'我')+': '+msg.content; quotePreview.style.display='flex'; }
-        hideContextMenu();
-    };
+    ctxQuote.onclick = () => { const msg = messages.find(m=>m.id==contextTargetMsgId); if(msg){ quotedMessage={id:msg.id, content:msg.content, sender:msg.sender}; quoteText.textContent=(msg.sender==='other'?settings.nickname:'我')+': '+msg.content; quotePreview.style.display='flex'; } hideContextMenu(); };
     ctxDelete.onclick = () => { if(confirm('删除消息？')){ messages=messages.filter(m=>m.id!=contextTargetMsgId); saveData(); renderMessages(); } hideContextMenu(); };
     btnCancelQuote.addEventListener('click', ()=>{ quotedMessage=null; quotePreview.style.display='none'; });
 
@@ -349,8 +295,7 @@
     }
     btnSend.addEventListener('click', sendMessage);
     chatInput.addEventListener('keydown', e => { if(e.key==='Enter'&&!e.shiftKey){ e.preventDefault(); sendMessage(); } });
-    function updateSendBtn(){ btnSend.disabled = !chatInput.value.trim(); }
-    chatInput.addEventListener('input', updateSendBtn);
+    function updateSendBtn(){ btnSend.disabled = !chatInput.value.trim(); } chatInput.addEventListener('input', updateSendBtn);
 
     function buildEmojiPanel(){
         emojiPanel.innerHTML=''; EMOJI_LIST.forEach(e=>{ const b=document.createElement('button'); b.className='emoji-item'; b.textContent=e; b.onclick=()=>{ chatInput.value+=e; updateSendBtn(); chatInput.focus(); emojiPanel.style.display='none'; }; emojiPanel.appendChild(b); });
@@ -384,9 +329,7 @@
                 const msgObj={id:Date.now()+Math.random(),sender:'other',content:tc.content+ec.content,timestamp:Date.now()};
                 if(quoteMsg){ msgObj.quotedMessageId=quoteMsg.id; msgObj.quotedContent=quoteMsg.content; }
                 messages.push(msgObj); renderMessages(); saveData();
-            } else {
-                selected.forEach((card,i)=>{ setTimeout(()=>{ const msgObj={id:Date.now()+Math.random(),sender:'other',content:card.content,timestamp:Date.now()}; if(quoteMsg&&i===0){ msgObj.quotedMessageId=quoteMsg.id; msgObj.quotedContent=quoteMsg.content; } messages.push(msgObj); renderMessages(); saveData(); }, i*700); });
-            }
+            } else { selected.forEach((card,i)=>{ setTimeout(()=>{ const msgObj={id:Date.now()+Math.random(),sender:'other',content:card.content,timestamp:Date.now()}; if(quoteMsg&&i===0){ msgObj.quotedMessageId=quoteMsg.id; msgObj.quotedContent=quoteMsg.content; } messages.push(msgObj); renderMessages(); saveData(); }, i*700); }); }
         }, 1500+Math.random()*1500);
     }
 
@@ -434,14 +377,7 @@
             folder.innerHTML=`📁 ${g}${blocked?' <span class="blocked-indicator">🚫</span>':''} <span class="folder-actions"><span class="rename-folder" title="重命名">✎</span><span class="block-folder" title="屏蔽">🚫</span><span class="del-folder" title="删除">✕</span></span>`;
             folder.querySelector('.rename-folder').onclick=e=>{ e.stopPropagation(); const n=prompt('重命名',g); if(n&&n.trim()&&!customGroups.includes(n.trim())){ wordCards.forEach(c=>{ if(c.group===g) c.group=n.trim(); }); customGroups=customGroups.map(x=>x===g?n.trim():x); if(selectedGroup===g) selectedGroup=n.trim(); saveData(); refreshCards(); } };
             folder.querySelector('.block-folder').onclick=e=>{ e.stopPropagation(); const blk=!isGroupBlocked(g); wordCards.forEach(c=>{ if(c.group===g) c.blocked=blk; }); saveData(); refreshCards(); };
-            folder.querySelector('.del-folder').onclick=e=>{
-                e.stopPropagation(); const m=document.createElement('div'); m.className='modal';
-                m.innerHTML=`<div class="modal-content"><p>删除分组"${g}"</p><button class="btn" id="delOnly">仅删文件夹</button><button class="btn danger" id="delAll">连同字卡</button><button class="btn" id="cancelDel">取消</button></div>`;
-                document.body.appendChild(m);
-                document.getElementById('delOnly').onclick=()=>{ customGroups=customGroups.filter(x=>x!==g); if(selectedGroup===g) selectedGroup='all'; saveData(); refreshCards(); m.remove(); };
-                document.getElementById('delAll').onclick=()=>{ wordCards=wordCards.filter(c=>c.group!==g); customGroups=customGroups.filter(x=>x!==g); if(selectedGroup===g) selectedGroup='all'; saveData(); refreshCards(); m.remove(); };
-                document.getElementById('cancelDel').onclick=()=>m.remove();
-            };
+            folder.querySelector('.del-folder').onclick=e=>{ e.stopPropagation(); const m=document.createElement('div'); m.className='modal'; m.innerHTML=`<div class="modal-content"><p>删除分组"${g}"</p><button class="btn" id="delOnly">仅删文件夹</button><button class="btn danger" id="delAll">连同字卡</button><button class="btn" id="cancelDel">取消</button></div>`; document.body.appendChild(m); document.getElementById('delOnly').onclick=()=>{ customGroups=customGroups.filter(x=>x!==g); if(selectedGroup===g) selectedGroup='all'; saveData(); refreshCards(); m.remove(); }; document.getElementById('delAll').onclick=()=>{ wordCards=wordCards.filter(c=>c.group!==g); customGroups=customGroups.filter(x=>x!==g); if(selectedGroup===g) selectedGroup='all'; saveData(); refreshCards(); m.remove(); }; document.getElementById('cancelDel').onclick=()=>m.remove(); };
             folder.onclick=e=>{ if(!e.target.closest('.folder-actions')){ selectedGroup=g; refreshCards(); } };
             groupFolderContainer.appendChild(folder);
         });
@@ -501,6 +437,7 @@
 
     btnAddGroup.onclick=()=>{ const n=inputNewGroup.value.trim(); if(n&&!customGroups.includes(n)&&!['text','emoji','status'].includes(n)){ customGroups.push(n); saveData(); refreshCards(); inputNewGroup.value=''; } else showToast('无效分组'); };
 
+    // 批量管理（含自动去重）
     btnBatchManage.onclick=()=>{
         const checked=document.querySelectorAll('.card-check:checked'); const checkedIds=Array.from(checked).map(cb=>cb.dataset.id);
         const modal=document.createElement('div'); modal.className='modal';
@@ -514,13 +451,32 @@
         <div style="display:flex;gap:10px;justify-content:flex-end;"><button class="btn danger" id="batchDelBtn">删除选中</button><button class="btn" id="cancelBatch">关闭</button></div></div>`;
         document.body.appendChild(modal);
         document.getElementById('cancelBatch').onclick=()=>modal.remove();
-        document.getElementById('doBatchAdd').onclick=()=>{ const lines=document.getElementById('batchAddInput').value.split('\n').filter(l=>l.trim()); const type=document.getElementById('batchAddType').value, group=document.getElementById('batchAddGroup').value; lines.forEach(l=>wordCards.push({id:Date.now()+Math.random(),type,content:l.trim(),group,blocked:false})); saveData(); refreshCards(); modal.remove(); showToast(`已添加${lines.length}条`); };
+        document.getElementById('doBatchAdd').onclick=()=>{
+            const lines = document.getElementById('batchAddInput').value.split('\n').filter(l => l.trim());
+            const type = document.getElementById('batchAddType').value;
+            const group = document.getElementById('batchAddGroup').value;
+            const existingSet = new Set(wordCards.map(c => c.content.trim()));
+            let added = 0, skipped = 0;
+            lines.forEach(line => {
+                const content = line.trim();
+                if (existingSet.has(content)) {
+                    skipped++;
+                } else {
+                    wordCards.push({id: Date.now()+Math.random(), type, content, group, blocked: false});
+                    existingSet.add(content);
+                    added++;
+                }
+            });
+            saveData(); refreshCards(); modal.remove();
+            showToast(`已添加 ${added} 条${skipped ? `，跳过 ${skipped} 条重复` : ''}`);
+        };
         document.getElementById('batchGroupSelect').onchange=function(e){ if(this.value){ wordCards.forEach(c=>{ if(checkedIds.includes(c.id)) c.group=this.value; }); saveData(); refreshCards(); modal.remove(); showToast('已移动'); } };
         document.getElementById('batchBlockBtn').onclick=()=>{ wordCards.forEach(c=>{ if(checkedIds.includes(c.id)) c.blocked=!c.blocked; }); saveData(); refreshCards(); modal.remove(); };
         document.getElementById('batchEditBtn').onclick=()=>{ const sc=wordCards.filter(c=>checkedIds.includes(c.id)); const ct=sc.map(c=>c.content).join('\n'); const em=document.createElement('div'); em.className='modal'; em.innerHTML=`<div class="modal-content"><h3>批量编辑 (每行一条)</h3><textarea id="editContentInput" rows="8" style="width:100%;">${ct}</textarea><div style="display:flex;gap:10px;justify-content:flex-end;margin-top:12px;"><button class="btn" id="cancelEdit">取消</button><button class="btn primary" id="saveEdit">保存</button></div></div>`; document.body.appendChild(em); document.getElementById('cancelEdit').onclick=()=>em.remove(); document.getElementById('saveEdit').onclick=()=>{ const nl=document.getElementById('editContentInput').value.split('\n'); if(nl.length!==sc.length) return showToast('行数需一致'); sc.forEach((c,i)=>{ if(nl[i].trim()==='') return showToast('内容不能为空'); c.content=nl[i].trim(); }); saveData(); refreshCards(); em.remove(); modal.remove(); }; };
         document.getElementById('batchDelBtn').onclick=()=>{ if(confirm('删除？')){ wordCards=wordCards.filter(c=>!checkedIds.includes(c.id)); saveData(); refreshCards(); modal.remove(); } };
     };
 
+    // 导入导出字卡（追加模式自动去重）
     btnImportCards.addEventListener('click',()=>{
         const modal=document.createElement('div'); modal.className='modal';
         modal.innerHTML=`<div class="modal-content"><h3 style="margin-bottom:16px;">导入字卡</h3><p style="margin-bottom:20px;">请选择导入模式：</p><div style="display:flex;gap:10px;"><button class="btn primary" id="appendImportBtn">追加导入</button><button class="btn danger" id="overwriteImportBtn">覆盖导入</button><button class="btn" id="cancelImportBtn">取消</button></div></div>`;
@@ -531,7 +487,7 @@
     });
     importCardsFileInput.addEventListener('change',e=>{
         const file=e.target.files[0]; if(!file) return; const reader=new FileReader();
-        reader.onload=ev=>{ try{ const data=JSON.parse(ev.target.result); if(data.wordCards&&Array.isArray(data.wordCards)){ if(importCardsMode==='append'){ wordCards=wordCards.concat(data.wordCards); if(data.customGroups){ data.customGroups.forEach(g=>{ if(g&&!customGroups.includes(g)&&!['text','emoji','status'].includes(g)) customGroups.push(g); }); } } else { wordCards=data.wordCards; customGroups=(data.customGroups||[]).filter(g=>!['text','emoji','status'].includes(g)); } saveData(); refreshCards(); showToast(importCardsMode==='append'?'追加成功':'覆盖导入成功'); } else showToast('格式错误'); } catch(ex){ showToast('解析失败'); } }; reader.readAsText(file); importCardsFileInput.value=''; importCardsMode='append';
+        reader.onload=ev=>{ try{ const data=JSON.parse(ev.target.result); if(data.wordCards&&Array.isArray(data.wordCards)){ if(importCardsMode==='append'){ const existingSet = new Set(wordCards.map(c=>c.content.trim())); const newCards = data.wordCards.filter(c => !existingSet.has(c.content.trim())); wordCards.push(...newCards); if(data.customGroups){ data.customGroups.forEach(g=>{ if(g&&!customGroups.includes(g)&&!['text','emoji','status'].includes(g)) customGroups.push(g); }); } showToast(`追加成功，新增 ${newCards.length} 条`); } else { wordCards=data.wordCards; customGroups=(data.customGroups||[]).filter(g=>!['text','emoji','status'].includes(g)); showToast('覆盖导入成功'); } saveData(); refreshCards(); } else showToast('格式错误'); } catch(ex){ showToast('解析失败'); } }; reader.readAsText(file); importCardsFileInput.value=''; importCardsMode='append';
     });
     btnExportCards.addEventListener('click',()=>{ const data={wordCards,customGroups,exportTime:new Date().toISOString()}; const b=new Blob([JSON.stringify(data,null,2)],{type:'application/json'}); const a=document.createElement('a'); a.href=URL.createObjectURL(b); a.download=`wordcards_${new Date().toISOString().slice(0,10)}.json`; a.click(); URL.revokeObjectURL(a.href); showToast('已导出'); });
 
